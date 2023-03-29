@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.equipment.system.mapper.TEquipmentWarnMapper">
+
+    <resultMap type="com.equipment.system.domain.TEquipmentWarn" id="TEquipmentWarnResult">
+        <result property="id"    column="id"    />
+        <result property="equipmentId"    column="equipment_id"    />
+        <result property="equipmentName"    column="equipment_name"    />
+        <result property="equipmentPostion"    column="equipment_postion"    />
+        <result property="type"    column="type"    />
+        <result property="typeName"    column="type_name"    />
+        <result property="handleResult"    column="handle_result"    />
+        <result property="handleBy"    column="handle_by"    />
+        <result property="handleTime"    column="handle_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+    </resultMap>
+
+    <sql id="selectTEquipmentWarnVo">
+        select id, equipment_id, equipment_name, equipment_postion, type, handle_result, handle_by, handle_time, create_time, create_by, update_time, update_by from t_equipment_warn
+    </sql>
+
+    <select id="selectTEquipmentWarnList" parameterType="TEquipmentWarn" resultMap="TEquipmentWarnResult">
+        <include refid="selectTEquipmentWarnVo"/>
+        <where>
+            <if test="equipmentId != null "> and equipment_id = #{equipmentId}</if>
+            <if test="equipmentName != null  and equipmentName != ''"> and equipment_name like concat('%', #{equipmentName}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="handleBy != null  and handleBy != ''"> and handle_by = #{handleBy}</if>
+            <if test="handleTime != null "> and handle_time = #{handleTime}</if>
+        </where>
+    </select>
+
+    <select id="selectTEquipmentWarnById" parameterType="Long" resultMap="TEquipmentWarnResult">
+        <include refid="selectTEquipmentWarnVo"/>
+        where id = #{id}
+    </select>
+    <select id="statistics" resultType="com.equipment.system.domain.vo.StatisticsVO">
+        select count(1) as `count`,type,ANY_VALUE(type_name) as `typeName` from t_equipment_warn
+        <where>
+            create_time>date_sub(NOW(),interval 7 day)
+            <if test="userName!='' and userName!=null">and create_by=#{userName}</if>
+        </where>
+        GROUP BY type
+    </select>
+
+    <insert id="insertTEquipmentWarn" parameterType="TEquipmentWarn" useGeneratedKeys="true" keyProperty="id">
+        insert into t_equipment_warn
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id,</if>
+            <if test="equipmentName != null and equipmentName != ''">equipment_name,</if>
+            <if test="equipmentPostion != null">equipment_postion,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="typeName != null and typeName != ''">type_name,</if>
+            <if test="handleResult != null">handle_result,</if>
+            <if test="handleBy != null and handleBy != ''">handle_by,</if>
+            <if test="handleTime != null">handle_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="equipmentId != null">#{equipmentId},</if>
+            <if test="equipmentName != null and equipmentName != ''">#{equipmentName},</if>
+            <if test="equipmentPostion != null">#{equipmentPostion},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="typeName != null and typeName != ''">#{typeName},</if>
+            <if test="handleResult != null">#{handleResult},</if>
+            <if test="handleBy != null and handleBy != ''">#{handleBy},</if>
+            <if test="handleTime != null">#{handleTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTEquipmentWarn" parameterType="TEquipmentWarn">
+        update t_equipment_warn
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="equipmentName != null and equipmentName != ''">equipment_name = #{equipmentName},</if>
+            <if test="equipmentPostion != null">equipment_postion = #{equipmentPostion},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="handleResult != null">handle_result = #{handleResult},</if>
+            <if test="handleBy != null and handleBy != ''">handle_by = #{handleBy},</if>
+            <if test="handleTime != null">handle_time = #{handleTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTEquipmentWarnById" parameterType="Long">
+        delete from t_equipment_warn where id = #{id}
+    </delete>
+
+    <delete id="deleteTEquipmentWarnByIds" parameterType="String">
+        delete from t_equipment_warn where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
